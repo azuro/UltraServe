@@ -11,7 +11,7 @@ public class XMLData {
 	public static HashBiMap<Short,String> TypeToId = HashBiMap.create();
 	public static HashBiMap<Short,String> IdToDungeon = HashBiMap.create();
 	public static HashBiMap<Short,Element> TypeToElement = HashBiMap.create();
-	public static HashBiMap<Short,TileDesc> TileDescs = HashBiMap.create();
+	// TODO public static HashBiMap<Short,TileDesc> TileDescs = HashBiMap.create();
 	
 	static{
 		ReadXMLs();

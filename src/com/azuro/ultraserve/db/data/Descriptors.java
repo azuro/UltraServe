@@ -1,6 +1,7 @@
 package com.azuro.ultraserve.db.data;
 
 import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -387,11 +388,12 @@ public class Descriptors {
 
 	    public int Doses;
 
-	    public AbstractMap.SimpleEntry<Integer,Integer>[] StatsBoost;
+	    public SimpleEntry<Integer,Integer>[] StatsBoost;
 	    public ActivateEffect[] ActivateEffects;
 	    public ProjectileDesc[] Projectiles;
 	    
-	    public Item(Element elem){
+	    @SuppressWarnings("unchecked")
+		public Item(Element elem){
 	    	//XML Structure:
 	    	//
 	    	//<Object type="0xa00" id="Short Sword">
@@ -509,11 +511,63 @@ public class Descriptors {
 	    	else{
 	    		Cooldown = 0f;
 	    	}
-	    	//TODO Start Here
+	    	
+	    	Resurrects = elem.getElementsByTagName("Resurrects").getLength()!=0;
+	    	
+	    	if((sub = elem.getElementsByTagName("Tex1")).getLength()!=0){
+	    		Texture1 = Util.getInt(sub.item(0).getNodeValue());
+	    	}
+	    	else{
+	    		Texture1 = 0;
+	    	}
+	    	
+	    	if((sub = elem.getElementsByTagName("Tex2")).getLength()!=0){
+	    		Texture2 = Util.getInt(sub.item(0).getNodeValue());
+	    	}
+	    	else{
+	    		Texture2 = 0;
+	    	}
+	    	
+	    	List<SimpleEntry<Integer, Integer>> stats = new ArrayList<SimpleEntry<Integer, Integer>>();
+	    	sub=elem.getElementsByTagName("ActivateOnEquip");
+	    	for(int i=0;i<sub.getLength();i++){
+	    		Element subElement = (Element)sub.item(i);
+	    		stats.add(new SimpleEntry<Integer, Integer>(Util.getInt(subElement.getAttribute("stat")), Util.getInt(subElement.getAttribute("amount"))));
+	    	}
+	    	StatsBoost = (SimpleEntry<Integer,Integer>[])stats.toArray();
+	    	
+	    	List<ActivateEffect> activate = new ArrayList<ActivateEffect>();
+	    	sub=elem.getElementsByTagName("Activate");
+	    	for(int i=0;i<sub.getLength();i++){
+	    		activate.add(new ActivateEffect((Element)sub.item(i)));
+	    	}
+	    	ActivateEffects = (ActivateEffect[])activate.toArray();
+	    	
+	    	List<ProjectileDesc> prj = new ArrayList<ProjectileDesc>();
+	    	sub=elem.getElementsByTagName("Projectile");
+	    	for(int i=0;i<sub.getLength();i++){
+	    		prj.add(new ProjectileDesc((Element)sub.item(i)));
+	    	}
+	    	Projectiles = (ProjectileDesc[])prj.toArray();
+	    	
+	    }
+	}
+	
+	public class SpawnCount{
+		public int Mean;
+	    public int StdDev;
+	    public int Min;
+	    public int Max;
+	    
+	    public SpawnCount(Element elem){
+	    	Mean = Util.getInt(elem.getElementsByTagName("Mean").item(0).getNodeValue());
+	    	StdDev = Util.getInt(elem.getElementsByTagName("StdDev").item(0).getNodeValue());
+	    	Min = Util.getInt(elem.getElementsByTagName("Min").item(0).getNodeValue());
+	    	Max = Util.getInt(elem.getElementsByTagName("Max").item(0).getNodeValue());
 	    }
 	}
 
-public class ObjectDesc{
+	public class ObjectDesc{
 		public short ObjectType;
 	    public String ObjectId;
 	    public String DisplayId;
@@ -534,13 +588,13 @@ public class ObjectDesc{
 	    public int MinSize ;
 	    public int MaxSize ;
 	    public int SizeStep ;
-	    //TODO public ProjectileDesc[] Projectiles;
+	    public ProjectileDesc[] Projectiles;
 	    
 	    public int MaxHP ;
 	    public int Defense ;
 	    public String Terrain ;
 	    public float SpawnProbability ;
-	    //TODO public SpawnCount Spawn ;
+	    public SpawnCount Spawn ;
 	    public boolean Cube ;
 	    public boolean God ;
 	    public boolean Quest ;
@@ -550,6 +604,8 @@ public class ObjectDesc{
 	    public boolean Hero ;
 	    public int PerRealmMax ;
 	    public float ExpMultiplier ;    //Exp gained = level total / 10 * multi
+	    
+	    
 
 	}
 }
