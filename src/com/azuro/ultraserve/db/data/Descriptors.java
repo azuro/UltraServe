@@ -578,34 +578,175 @@ public class Descriptors {
 	    public boolean OccupySquare;
 	    public boolean FullOccupy;
 	    public boolean EnemyOccupySquare ;
-	    public boolean Static ;
+	    public boolean Static;
 	    public boolean NoMiniMap ;
-	    public boolean ProtectFromGroundDamage ;
-	    public boolean ProtectFromSink ;
-	    public boolean Flying ;
-	    public boolean ShowName ;
-	    public boolean DontFaceAttacks ;
-	    public int MinSize ;
-	    public int MaxSize ;
-	    public int SizeStep ;
+	    public boolean ProtectFromGroundDamage;
+	    public boolean ProtectFromSink;
+	    public boolean Flying;
+	    public boolean ShowName;
+	    public boolean DontFaceAttacks;
+	    public int MinSize;
+	    public int MaxSize;
+	    public int SizeStep;
 	    public ProjectileDesc[] Projectiles;
 	    
-	    public int MaxHP ;
-	    public int Defense ;
-	    public String Terrain ;
-	    public float SpawnProbability ;
-	    public SpawnCount Spawn ;
-	    public boolean Cube ;
-	    public boolean God ;
+	    public int MaxHP;
+	    public int Defense;
+	    public String Terrain;
+	    public float SpawnProbability;
+	    public SpawnCount Spawn;
+	    public boolean Cube;
+	    public boolean God;
 	    public boolean Quest ;
-	    public int Level ;
-	    public boolean StasisImmune ;
+	    public int Level;
+	    public boolean StasisImmune;
 	    public boolean Oryx ;
 	    public boolean Hero ;
-	    public int PerRealmMax ;
-	    public float ExpMultiplier ;    //Exp gained = level total / 10 * multi
+	    public Integer PerRealmMax ;
+	    public Float ExpMultiplier ;    //Exp gained = level total / 10 * multi
 	    
+	    public ObjectDesc(Element elem){
+	    	Element sub;
+	    	ObjectType = (short)Util.getInt(elem.getAttribute("type"));
+	    	ObjectId = elem.getAttribute("id");
+	    	Class = elem.getElementsByTagName("Class").item(0).getNodeValue();
+	    	if((sub =(Element)elem.getElementsByTagName("Group").item(0))!=null)
+	    		Group = sub.getNodeValue();
+	    	else
+	    		Group = null;
+	    	if((sub = (Element)elem.getElementsByTagName("DisplayId").item(0))!=null)
+	    		DisplayId = sub.getNodeValue();
+	    	else
+	    		DisplayId = null;
+	    	
+	    	Player = elem.getElementsByTagName("Player").getLength()!=0;
+	    	Enemy = elem.getElementsByTagName("Enemy").getLength()!=0;
+	    	OccupySquare = elem.getElementsByTagName("OccupySquare").getLength()!=0;
+	    	FullOccupy = elem.getElementsByTagName("FullOccupy").getLength()!=0;
+	    	EnemyOccupySquare = elem.getElementsByTagName("EnemyOccupySquare").getLength()!=0;
+			Static = elem.getElementsByTagName("Static").getLength()!=0;
+	        NoMiniMap = elem.getElementsByTagName("NoMiniMap").getLength()!=0;
+	        ProtectFromGroundDamage = elem.getElementsByTagName("ProtectFromGroundDamage").getLength()!=0;
+	        ProtectFromSink = elem.getElementsByTagName("ProtectFromSink").getLength()!=0;
+	        Flying = elem.getElementsByTagName("Flying").getLength()!=0;
+	        ShowName = elem.getElementsByTagName("ShowName").getLength()!=0;
+	        DontFaceAttacks = elem.getElementsByTagName("DontFaceAttacks").getLength()!=0;
+	        
+	        if ((sub = (Element)elem.getElementsByTagName("Size").item(0)) != null)
+	        {
+	            MinSize = MaxSize = Util.getInt(sub.getNodeValue());
+	            SizeStep = 0;
+	        }
+	        else
+	        {
+	            if ((sub = (Element)elem.getElementsByTagName("MinSize").item(0)) != null)
+	                MinSize = Util.getInt(sub.getNodeValue());
+	            else
+	                MinSize = 100;
+	            if ((sub = (Element)elem.getElementsByTagName("MaxSize").item(0)) != null)
+	                MaxSize = Util.getInt(sub.getNodeValue());
+	            else
+	                MaxSize = 100;
+	            if ((sub = (Element)elem.getElementsByTagName("SizeStep").item(0)) != null)
+	                SizeStep = Util.getInt(sub.getNodeValue());
+	            else
+	                SizeStep = 0;
+	        }
+	        
+	        List<ProjectileDesc> prj = new ArrayList<ProjectileDesc>();
+	        NodeList nSub;
+	    	nSub=elem.getElementsByTagName("Projectile");
+	    	for(int i=0;i<nSub.getLength();i++){
+	    		prj.add(new ProjectileDesc((Element)nSub.item(i)));
+	    	}
+	    	Projectiles = (ProjectileDesc[])prj.toArray();
+	    	
+	    if((sub = (Element)elem.getElementsByTagName("MaxHitPoints").item(0)) != null)
+            MaxHP = Util.getInt(sub.getNodeValue());
+        if ((sub = (Element)elem.getElementsByTagName("Defense").item(0)) != null)
+            Defense = Util.getInt(sub.getNodeValue());
+        if ((sub = (Element)elem.getElementsByTagName("Terrain").item(0)) != null)
+            Terrain = sub.getNodeValue();
+        if ((sub = (Element)elem.getElementsByTagName("SpawnProbability").item(0)) != null)
+            SpawnProbability = Float.parseFloat(sub.getNodeValue());
+        if ((sub = (Element)elem.getElementsByTagName("Spawn").item(0)) != null)
+            Spawn = new SpawnCount(sub);
+        
+        StasisImmune = elem.getElementsByTagName("StasisImmune").getLength() !=0;
+        Oryx = elem.getElementsByTagName("Oryx").getLength() !=0;
+        Hero = elem.getElementsByTagName("Hero").getLength() !=0;
+        
+        if ((sub = (Element)elem.getElementsByTagName("PerRealmMax").item(0)) != null)
+            PerRealmMax = Util.getInt(sub.getNodeValue());
+        else
+        	PerRealmMax = null;
 	    
+        if ((sub = (Element)elem.getElementsByTagName("XpMult").item(0)) != null)
+            ExpMultiplier = Float.parseFloat(sub.getNodeValue());
+        else
+        	ExpMultiplier = null;
+        
+	    }	    
+	}
+	
+	public class TileDesc
+	{
+	    public short ObjectType;
+	    public String ObjectId;
+	    public boolean NoWalk;
+	    public boolean Damaging;
+	    public int MinDamage;
+	    public int MaxDamage;
+	    public float Speed;
+	    public boolean Push;
+	    public float PushX;
+	    public float PushY;
 
+	    public TileDesc(Element elem)
+	    {
+	        Element sub;
+	        ObjectType = (short)Util.getInt(elem.getAttribute("type"));
+	        ObjectId = elem.getAttribute("id");
+	        NoWalk = elem.getElementsByTagName("NoWalk") != null;
+	        if ((sub = (Element)elem.getElementsByTagName("MinDamage").item(0)) != null)
+	        {
+	            MinDamage = Util.getInt(sub.getNodeValue());
+	            Damaging = true;
+	        }
+	        if ((sub = (Element)elem.getElementsByTagName("MaxDamage").item(0)) != null)
+	        {
+	            MaxDamage = Util.getInt(sub.getNodeValue());
+	            Damaging = true;
+	        }
+	        if ((sub = (Element)elem.getElementsByTagName("Speed").item(0)) != null)
+	            Speed = Float.parseFloat(sub.getNodeValue());
+	        Push = elem.getElementsByTagName("Push").getLength() != 0;
+	        if (Push)
+	        {
+	            Element anim = (Element)elem.getElementsByTagName("Animate").item(0);
+	            if (anim.hasAttribute("dx"))
+	                PushX = Float.parseFloat(anim.getAttribute("dx"));
+	            if (elem.hasAttribute("dy"))
+	                PushY = Float.parseFloat(anim.getAttribute("dy"));
+	        }
+	    }
+	}
+	
+	public class DungeonDesc
+	{
+	    public String Name;
+	    public short PortalId;
+	    public int Background;
+	    public boolean AllowTeleport;
+	    public String Json;
+
+	    public DungeonDesc(Element elem)
+	    {
+	        Name = elem.getAttribute("name");
+	        PortalId = (short)Util.getInt(elem.getAttribute("type"));
+	        Background = Util.getInt(elem.getElementsByTagName("Background").item(0).getNodeValue());
+	        AllowTeleport = elem.getElementsByTagName("AllowTeleport").getLength() != 0;
+	        Json = elem.getElementsByTagName("Json").item(0).getNodeValue();
+	    }
 	}
 }
