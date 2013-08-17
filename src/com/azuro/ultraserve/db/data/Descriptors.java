@@ -108,7 +108,7 @@ public class Descriptors {
 		public ConditionEffect(Element elem){
 			//XML Structure:
 			//<ConditionEffect duration = "{duration}" range="{range}">{ConditionEffect}</ConditionEffect>
-			Effect = ConditionEffectIndex.valueOf(elem.getNodeValue().replace(" ", ""));
+			Effect = ConditionEffectIndex.valueOf(elem.getTextContent().replace(" ", ""));
 			if(elem.hasAttribute("duration"))
 				DurationMS = (int)(Float.parseFloat(elem.getAttribute("duration")));
 			if(elem.hasAttribute("range"))
@@ -155,18 +155,18 @@ public class Descriptors {
 	    	//</Projectile>
 	    	
 	    	if(elem.hasAttribute("id")){
-	    		BulletType = Integer.parseInt(elem.getAttribute("id"));
+	    		BulletType = Util.getInt(elem.getAttribute("id"));
 	    	}
 	    	ObjectId = elem.getElementsByTagName("ObjectId").item(0).getTextContent();
-	    	LifetimeMS = Integer.parseInt(elem.getElementsByTagName("LifetimeMS").item(0).getTextContent());
+	    	LifetimeMS = Util.getInt(elem.getElementsByTagName("LifetimeMS").item(0).getTextContent());
 	    	Speed = Float.parseFloat(elem.getElementsByTagName("Speed").item(0).getTextContent());
 	    	
 	    	//Projectile may have either a Single Value or a Range of values for damage, handle accordingly
-	    	if(elem.getElementsByTagName("Speed").getLength()!=0)
-	    		MinDamage = MaxDamage =  Integer.parseInt(elem.getElementsByTagName("Damage").item(0).getTextContent());
+	    	if(elem.getElementsByTagName("Damage").getLength()!=0)
+	    		MinDamage = MaxDamage =  Util.getInt(elem.getElementsByTagName("Damage").item(0).getTextContent());
 	    	else{
-	    		MinDamage = Integer.parseInt(elem.getElementsByTagName("MinDamage").item(0).getTextContent());
-	    		MaxDamage = Integer.parseInt(elem.getElementsByTagName("MaxDamage").item(0).getTextContent());
+	    		MinDamage = Util.getInt(elem.getElementsByTagName("MinDamage").item(0).getTextContent());
+	    		MaxDamage = Util.getInt(elem.getElementsByTagName("MaxDamage").item(0).getTextContent());
 	    	}
 	    	NodeList CEffectElements = elem.getElementsByTagName("ConditionEffect");
 	    	//Add Condition Effects
@@ -175,7 +175,7 @@ public class Descriptors {
 	    		for(int i=0;i<effects.size();i++){
 	    			effects.add(new ConditionEffect((Element)CEffectElements.item(i)));
 	    		}
-	    		Effects = (ConditionEffect[]) effects.toArray();
+	    		Effects = effects.toArray(new ConditionEffect[effects.size()]);
 	    	}
 	    	//Shot Character:
 	    	MultiHit = elem.getElementsByTagName("MultiHit").getLength()!=0;
@@ -188,21 +188,21 @@ public class Descriptors {
 	    	
 	        NodeList DescrList = elem.getElementsByTagName("Amplitude");
 	        if(DescrList.getLength()!=0){
-	        	Amplitude = Float.parseFloat(DescrList.item(0).getNodeValue());
+	        	Amplitude = Float.parseFloat(DescrList.item(0).getTextContent());
 	        }
 	        else{
 	        	Amplitude = 0;
 	        }
 	        DescrList = elem.getElementsByTagName("Frequency");
 	        if(DescrList.getLength()!=0){
-	        	Frequency = Float.parseFloat(DescrList.item(0).getNodeValue());
+	        	Frequency = Float.parseFloat(DescrList.item(0).getTextContent());
 	        }
 	        else{
 	        	Frequency = 1;
 	        }
 	        DescrList = elem.getElementsByTagName("Magnitude");
 	        if(DescrList.getLength()!=0){
-	        	Magnitude = Float.parseFloat(DescrList.item(0).getNodeValue());
+	        	Magnitude = Float.parseFloat(DescrList.item(0).getTextContent());
 	        }
 	        else{
 	        	Magnitude = 3;
@@ -272,17 +272,17 @@ public class Descriptors {
 	    	//XML Structure:
 	    	//
 	    	//<Activate effect="{ActivateEffect}" duration="{duration}" range="{range}">{Effect}</Activate>
-	    	Effect = ActivateEffects.valueOf(elem.getNodeValue());
+	    	Effect = ActivateEffects.valueOf(elem.getTextContent());
 	    	if(elem.hasAttribute("stat"))
-	    		Stats = Integer.parseInt(elem.getAttribute("stat"));
+	    		Stats = Util.getInt(elem.getAttribute("stat"));
 	    	
 	    	if(elem.hasAttribute("amount"))
-	    		Amount = Integer.parseInt(elem.getAttribute("amount"));
+	    		Amount = Util.getInt(elem.getAttribute("amount"));
 	    	
 	    	if(elem.hasAttribute("range"))
-	    		Range = Integer.parseInt(elem.getAttribute("range"));
+	    		Range = Float.parseFloat(elem.getAttribute("range"));
 	    	if(elem.hasAttribute("duration"))
-	    		DurationMS = Integer.parseInt(elem.getAttribute("duration"));
+	    		DurationMS = (int)Float.parseFloat(elem.getAttribute("duration"))*1000;
 	    	
 	    	if(elem.hasAttribute("effect"))
 	    		ConditionEffect = ConditionEffectIndex.valueOf(elem.getAttribute("effect"));
@@ -293,19 +293,19 @@ public class Descriptors {
 	    		EffectDuration = Float.parseFloat(elem.getAttribute("condDuration"));
 	    	
 	    	if(elem.hasAttribute("maxDistance"))
-	    		MaximumDistance = Integer.parseInt(elem.getAttribute("maxDistance"));
+	    		MaximumDistance = Util.getInt(elem.getAttribute("maxDistance"));
 	    	
 	    	if(elem.hasAttribute("totalDamage"))
-	    		TotalDamage = Integer.parseInt(elem.getAttribute("totalDamage"));
+	    		TotalDamage = Util.getInt(elem.getAttribute("totalDamage"));
 	    	
 	    	if (elem.hasAttribute("objectId"))
 	            ObjectId = elem.getAttribute("objectId");
 
 	        if (elem.hasAttribute("angleOffset"))
-	            AngleOffset = Integer.parseInt(elem.getAttribute("angleOffset"));
+	            AngleOffset = Util.getInt(elem.getAttribute("angleOffset"));
 
 	        if (elem.hasAttribute("maxTargets"))
-	            MaxTargets = Integer.parseInt(elem.getAttribute("maxTargets"));
+	            MaxTargets = Util.getInt(elem.getAttribute("maxTargets"));
 
 	        if (elem.hasAttribute("id"))
 	            Id = elem.getAttribute("id");
@@ -318,7 +318,7 @@ public class Descriptors {
 
 	        //TODO Check if int Works
 	        if (elem.hasAttribute("color"))
-	            Color = Integer.parseInt(elem.getAttribute("color").substring(2));
+	            Color = Long.parseLong(elem.getAttribute("color").substring(2),16);
 	    	
 	    }
 	}
@@ -347,7 +347,7 @@ public class Descriptors {
 	    	ObjectType = (short)Util.getInt(elem.getAttribute("type"));
 	    	ObjectId = elem.getAttribute("id");
 	    	if(elem.getElementsByTagName("DungeonName").getLength()!=0)//Dungeon Portal
-	    		DungeonName = elem.getElementsByTagName("DungeonName").item(0).getNodeValue();
+	    		DungeonName = elem.getElementsByTagName("DungeonName").item(0).getTextContent();
 	    	
 	    	else if(elem.getElementsByTagName("NexusPortal").getLength()!=0)//Nexus Portal
 	    		NexusPortal = true;
@@ -388,7 +388,7 @@ public class Descriptors {
 
 	    public int Doses;
 
-	    public SimpleEntry<Integer,Integer>[] StatsBoost;
+	    public IntIntPair[] StatsBoost;
 	    public ActivateEffect[] ActivateEffects;
 	    public ProjectileDesc[] Projectiles;
 	    
@@ -420,19 +420,19 @@ public class Descriptors {
 	    	ObjectType = (short)Util.getInt(elem.getAttribute("type"));
 	    	ObjectId = elem.getAttribute("id");
 	    	
-	    	SlotType = Util.getInt(elem.getElementsByTagName("SlotType").item(0).getNodeValue());
+	    	SlotType = Util.getInt(elem.getElementsByTagName("SlotType").item(0).getTextContent());
 	    	
 	    	if((sub = elem.getElementsByTagName("Tier")).getLength()!=0){
-	    		Tier = Util.getInt(sub.item(0).getNodeValue());
+	    		Tier = Util.getInt(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		Tier = -1;
 	    	}
 	    	
-	    	Description = elem.getElementsByTagName("Description").item(0).getNodeValue();
+	    	Description = elem.getElementsByTagName("Description").item(0).getTextContent();
 	    	
 	    	if((sub = elem.getElementsByTagName("RateOfFire")).getLength()!=0){
-	    		RateOfFire = Float.parseFloat(sub.item(0).getNodeValue());
+	    		RateOfFire = Float.parseFloat(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		RateOfFire = 1;
@@ -441,35 +441,35 @@ public class Descriptors {
 	    	Usable = elem.getElementsByTagName("Usable").getLength()!=0;
 	    	
 	    	if((sub = elem.getElementsByTagName("BagType")).getLength()!=0){
-	    		BagType = Util.getInt(sub.item(0).getNodeValue());
+	    		BagType = Util.getInt(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		BagType = 0;
 	    	}
 	    	
 	    	if((sub = elem.getElementsByTagName("MpCost")).getLength()!=0){
-	    		MpCost = Util.getInt(sub.item(0).getNodeValue());
+	    		MpCost = Util.getInt(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		MpCost = 0;
 	    	}
 	    	
 	    	if((sub = elem.getElementsByTagName("FameBonus")).getLength()!=0){
-	    		FameBonus = Util.getInt(sub.item(0).getNodeValue());
+	    		FameBonus = Util.getInt(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		FameBonus = 0;
 	    	}
 	    	
 	    	if((sub = elem.getElementsByTagName("NumProjectiles")).getLength()!=0){
-	    		NumProjectiles = Util.getInt(sub.item(0).getNodeValue());
+	    		NumProjectiles = Util.getInt(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		NumProjectiles = 1;
 	    	}
 	    	
 	    	if((sub = elem.getElementsByTagName("ArcGap")).getLength()!=0){
-	    		ArcGap = Float.parseFloat(sub.item(0).getNodeValue());
+	    		ArcGap = Float.parseFloat(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		ArcGap = 11.25f;
@@ -479,21 +479,21 @@ public class Descriptors {
 	    	Potion = elem.getElementsByTagName("Potion").getLength()!=0;
 	    	
 	    	if((sub = elem.getElementsByTagName("DisplayId")).getLength()!=0){
-	    		DisplayId = sub.item(0).getNodeValue();
+	    		DisplayId = sub.item(0).getTextContent();
 	    	}
 	    	else{
 	    		DisplayId=null;
 	    	}
 	    	
 	    	if((sub = elem.getElementsByTagName("Doses")).getLength()!=0){
-	    		Doses = Util.getInt(sub.item(0).getNodeValue());
+	    		Doses = Util.getInt(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		Doses = 0;
 	    	}
 	    	
 	    	if((sub = elem.getElementsByTagName("SuccessorId")).getLength()!=0){
-	    		SuccessorId = sub.item(0).getNodeValue();
+	    		SuccessorId = sub.item(0).getTextContent();
 	    	}
 	    	else{
 	    		SuccessorId=null;
@@ -506,7 +506,7 @@ public class Descriptors {
 	    	Secret = elem.getElementsByTagName("Secret").getLength()!=0;
 	    	
 	    	if((sub = elem.getElementsByTagName("Cooldown")).getLength()!=0){
-	    		Cooldown = Float.parseFloat(sub.item(0).getNodeValue());
+	    		Cooldown = Float.parseFloat(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		Cooldown = 0f;
@@ -515,40 +515,40 @@ public class Descriptors {
 	    	Resurrects = elem.getElementsByTagName("Resurrects").getLength()!=0;
 	    	
 	    	if((sub = elem.getElementsByTagName("Tex1")).getLength()!=0){
-	    		Texture1 = Util.getInt(sub.item(0).getNodeValue());
+	    		Texture1 = Util.getInt(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		Texture1 = 0;
 	    	}
 	    	
 	    	if((sub = elem.getElementsByTagName("Tex2")).getLength()!=0){
-	    		Texture2 = Util.getInt(sub.item(0).getNodeValue());
+	    		Texture2 = Util.getInt(sub.item(0).getTextContent());
 	    	}
 	    	else{
 	    		Texture2 = 0;
 	    	}
 	    	
-	    	List<SimpleEntry<Integer, Integer>> stats = new ArrayList<SimpleEntry<Integer, Integer>>();
+	    	List<IntIntPair> stats = new ArrayList<IntIntPair>();
 	    	sub=elem.getElementsByTagName("ActivateOnEquip");
 	    	for(int i=0;i<sub.getLength();i++){
 	    		Element subElement = (Element)sub.item(i);
-	    		stats.add(new SimpleEntry<Integer, Integer>(Util.getInt(subElement.getAttribute("stat")), Util.getInt(subElement.getAttribute("amount"))));
+	    		stats.add(new IntIntPair(Util.getInt(subElement.getAttribute("stat")), Util.getInt(subElement.getAttribute("amount"))));
 	    	}
-	    	StatsBoost = (SimpleEntry<Integer,Integer>[])stats.toArray();
+	    	StatsBoost = stats.toArray(new IntIntPair[stats.size()]);
 	    	
 	    	List<ActivateEffect> activate = new ArrayList<ActivateEffect>();
 	    	sub=elem.getElementsByTagName("Activate");
 	    	for(int i=0;i<sub.getLength();i++){
 	    		activate.add(new ActivateEffect((Element)sub.item(i)));
 	    	}
-	    	ActivateEffects = (ActivateEffect[])activate.toArray();
+	    	ActivateEffects = activate.toArray(new ActivateEffect[activate.size()]);
 	    	
 	    	List<ProjectileDesc> prj = new ArrayList<ProjectileDesc>();
 	    	sub=elem.getElementsByTagName("Projectile");
 	    	for(int i=0;i<sub.getLength();i++){
 	    		prj.add(new ProjectileDesc((Element)sub.item(i)));
 	    	}
-	    	Projectiles = (ProjectileDesc[])prj.toArray();
+	    	Projectiles = prj.toArray(new ProjectileDesc[prj.size()]);
 	    	
 	    }
 	}
@@ -560,10 +560,10 @@ public class Descriptors {
 	    public int Max;
 	    
 	    public SpawnCount(Element elem){
-	    	Mean = Util.getInt(elem.getElementsByTagName("Mean").item(0).getNodeValue());
-	    	StdDev = Util.getInt(elem.getElementsByTagName("StdDev").item(0).getNodeValue());
-	    	Min = Util.getInt(elem.getElementsByTagName("Min").item(0).getNodeValue());
-	    	Max = Util.getInt(elem.getElementsByTagName("Max").item(0).getNodeValue());
+	    	Mean = Util.getInt(elem.getElementsByTagName("Mean").item(0).getTextContent());
+	    	StdDev = Util.getInt(elem.getElementsByTagName("StdDev").item(0).getTextContent());
+	    	Min = Util.getInt(elem.getElementsByTagName("Min").item(0).getTextContent());
+	    	Max = Util.getInt(elem.getElementsByTagName("Max").item(0).getTextContent());
 	    }
 	}
 
@@ -609,13 +609,13 @@ public class Descriptors {
 	    	Element sub;
 	    	ObjectType = (short)Util.getInt(elem.getAttribute("type"));
 	    	ObjectId = elem.getAttribute("id");
-	    	Class = elem.getElementsByTagName("Class").item(0).getNodeValue();
+	    	Class = elem.getElementsByTagName("Class").item(0).getTextContent();
 	    	if((sub =(Element)elem.getElementsByTagName("Group").item(0))!=null)
-	    		Group = sub.getNodeValue();
+	    		Group = sub.getTextContent();
 	    	else
 	    		Group = null;
 	    	if((sub = (Element)elem.getElementsByTagName("DisplayId").item(0))!=null)
-	    		DisplayId = sub.getNodeValue();
+	    		DisplayId = sub.getTextContent();
 	    	else
 	    		DisplayId = null;
 	    	
@@ -634,21 +634,21 @@ public class Descriptors {
 	        
 	        if ((sub = (Element)elem.getElementsByTagName("Size").item(0)) != null)
 	        {
-	            MinSize = MaxSize = Util.getInt(sub.getNodeValue());
+	            MinSize = MaxSize = Util.getInt(sub.getTextContent());
 	            SizeStep = 0;
 	        }
 	        else
 	        {
 	            if ((sub = (Element)elem.getElementsByTagName("MinSize").item(0)) != null)
-	                MinSize = Util.getInt(sub.getNodeValue());
+	                MinSize = Util.getInt(sub.getTextContent());
 	            else
 	                MinSize = 100;
 	            if ((sub = (Element)elem.getElementsByTagName("MaxSize").item(0)) != null)
-	                MaxSize = Util.getInt(sub.getNodeValue());
+	                MaxSize = Util.getInt(sub.getTextContent());
 	            else
 	                MaxSize = 100;
 	            if ((sub = (Element)elem.getElementsByTagName("SizeStep").item(0)) != null)
-	                SizeStep = Util.getInt(sub.getNodeValue());
+	                SizeStep = Util.getInt(sub.getTextContent());
 	            else
 	                SizeStep = 0;
 	        }
@@ -659,16 +659,16 @@ public class Descriptors {
 	    	for(int i=0;i<nSub.getLength();i++){
 	    		prj.add(new ProjectileDesc((Element)nSub.item(i)));
 	    	}
-	    	Projectiles = (ProjectileDesc[])prj.toArray();
+	    	Projectiles = prj.toArray(new ProjectileDesc[prj.size()]);
 	    	
 	    if((sub = (Element)elem.getElementsByTagName("MaxHitPoints").item(0)) != null)
-            MaxHP = Util.getInt(sub.getNodeValue());
+            MaxHP = Util.getInt(sub.getTextContent());
         if ((sub = (Element)elem.getElementsByTagName("Defense").item(0)) != null)
-            Defense = Util.getInt(sub.getNodeValue());
+            Defense = Util.getInt(sub.getTextContent());
         if ((sub = (Element)elem.getElementsByTagName("Terrain").item(0)) != null)
-            Terrain = sub.getNodeValue();
+            Terrain = sub.getTextContent();
         if ((sub = (Element)elem.getElementsByTagName("SpawnProbability").item(0)) != null)
-            SpawnProbability = Float.parseFloat(sub.getNodeValue());
+            SpawnProbability = Float.parseFloat(sub.getTextContent());
         if ((sub = (Element)elem.getElementsByTagName("Spawn").item(0)) != null)
             Spawn = new SpawnCount(sub);
         
@@ -677,12 +677,12 @@ public class Descriptors {
         Hero = elem.getElementsByTagName("Hero").getLength() !=0;
         
         if ((sub = (Element)elem.getElementsByTagName("PerRealmMax").item(0)) != null)
-            PerRealmMax = Util.getInt(sub.getNodeValue());
+            PerRealmMax = Util.getInt(sub.getTextContent());
         else
         	PerRealmMax = null;
 	    
         if ((sub = (Element)elem.getElementsByTagName("XpMult").item(0)) != null)
-            ExpMultiplier = Float.parseFloat(sub.getNodeValue());
+            ExpMultiplier = Float.parseFloat(sub.getTextContent());
         else
         	ExpMultiplier = null;
         
@@ -710,16 +710,16 @@ public class Descriptors {
 	        NoWalk = elem.getElementsByTagName("NoWalk") != null;
 	        if ((sub = (Element)elem.getElementsByTagName("MinDamage").item(0)) != null)
 	        {
-	            MinDamage = Util.getInt(sub.getNodeValue());
+	            MinDamage = Util.getInt(sub.getTextContent());
 	            Damaging = true;
 	        }
 	        if ((sub = (Element)elem.getElementsByTagName("MaxDamage").item(0)) != null)
 	        {
-	            MaxDamage = Util.getInt(sub.getNodeValue());
+	            MaxDamage = Util.getInt(sub.getTextContent());
 	            Damaging = true;
 	        }
 	        if ((sub = (Element)elem.getElementsByTagName("Speed").item(0)) != null)
-	            Speed = Float.parseFloat(sub.getNodeValue());
+	            Speed = Float.parseFloat(sub.getTextContent());
 	        Push = elem.getElementsByTagName("Push").getLength() != 0;
 	        if (Push)
 	        {
@@ -744,9 +744,9 @@ public class Descriptors {
 	    {
 	        Name = elem.getAttribute("name");
 	        PortalId = (short)Util.getInt(elem.getAttribute("type"));
-	        Background = Util.getInt(elem.getElementsByTagName("Background").item(0).getNodeValue());
+	        Background = Util.getInt(elem.getElementsByTagName("Background").item(0).getTextContent());
 	        AllowTeleport = elem.getElementsByTagName("AllowTeleport").getLength() != 0;
-	        Json = elem.getElementsByTagName("Json").item(0).getNodeValue();
+	        Json = elem.getElementsByTagName("Json").item(0).getTextContent();
 	    }
 	}
 }
