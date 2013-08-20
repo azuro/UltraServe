@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.azuro.ultraserve.data.entity.NewsItem;
@@ -25,9 +27,10 @@ public class Database {
 	
 	protected Database() {//Here to  Defend Instantiation
 		try {
-			Class.forName("org.sqlite.JDBC");
-			dbConnection = DriverManager.getConnection("jdbc:sqlite:RotMG.db");
+			Class.forName("org.hsqldb.JDBCDriver");
+			dbConnection = DriverManager.getConnection("jdbc:hsqldb:file:RotMG;shutdown=true","ultranoob","ultraserve");
 		} catch (Exception e) {//Silently Let the Error Fall through
+			System.err.println("Error connecting to Database! Restart your computer and try again");
 		}
 	}
 	//----------------------------------------------
@@ -78,15 +81,41 @@ public class Database {
 					});
 				}
 			}
-			
+			Collections.sort(ret, new Comparator<NewsItem>(){
+
+				@Override
+				public int compare(NewsItem firstItem, NewsItem secondItem) {
+					return firstItem.Date < secondItem.Date ? -1
+							: firstItem.Date > secondItem.Date ? 1
+									:0;
+				}
+				
+				
+			});
+			return ret.subList(0,10);
 			
 		//Error Handling	
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		finally{
-			return ret;
+			return ret.subList(0,10);
 		}
 	}
 	
+	static final String[] randNames = {
+		 "Darq", "Deyst", "Drac", "Drol",
+         "Eango", "Eashy", "Eati", "Eendi", "Ehoni",
+         "Gharr", "Iatho", "Iawa", "Idrae", "Iri", "Issz", "Itani",
+         "Laen", "Lauk", "Lorz",
+         "Oalei", "Odaru", "Oeti", "Orothi", "Oshyu",
+         "Queq", "Radph", "Rayr", "Ril", "Rilr", "Risrr",
+         "Saylt", "Scheev", "Sek", "Serl", "Seus",
+         "Tal", "Tiar", "Uoro", "Urake", "Utanu",
+         "Vorck", "Vorv", "Yangu", "Yimi", "Zhiar"
+	};
+	
+	public static Account CreateGuestAccount(String UUID){
+		
+	}
 }
